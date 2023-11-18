@@ -16,27 +16,31 @@ class CustomException extends Exception {
 }
 
 public class Lex {
-    public static FileWriter myOutput;
-    //public String[] lexemeList;
-
-    public String[] tokenList;
+    private final int MAX = 100;
+    private FileWriter myOutput;
+    private String[] lexemeList;
+    private String[] tokenList = new String[this.MAX];
 
     // Driver method
     // @throws IOException
     public static void main(String[] args) throws IOException {
 
-        Lex run = new Lex();
+        //Class object instantiation to call methods
+        Lex lexAnalyze = new Lex();
+
+        //String and Scanner objects for input
         String line;
         Scanner scan;
-        myOutput = new FileWriter("lexOutput.txt");
+
+        lexAnalyze.myOutput = new FileWriter("lexOutput.txt");
 
         // Print Header Info to Terminal and Output File
         String headerInfo = "Eliana Gaul, CSCI4200, Fall 2023, Lexical Analyzer";
         String headerAsterisks = "*".repeat(80);
         System.out.print(headerInfo + "\n");
-        myOutput.write(headerInfo + "\n");
+        lexAnalyze.myOutput.write(headerInfo + "\n");
         System.out.print(headerAsterisks + "\n");
-        myOutput.write(headerAsterisks + "\n");
+        lexAnalyze.myOutput.write(headerAsterisks + "\n");
 
         // Open the file, and scan each line for lexical analysis
         try {
@@ -45,52 +49,125 @@ public class Lex {
             // For each line, get each character
             while (scan.hasNextLine()) {
 
-                line = scan.nextLine().trim();         // Trims leading and trailing whitespace from each line
+                line = scan.nextLine().trim();// Trims leading and trailing whitespace from each line
 
-                if(!line.isEmpty()){            // Skip blank lines in input file
-                    System.out.println(line);
-                    myOutput.write(line + "\n");
+                if(!line.isEmpty()){// Skip blank lines in input file
 
-                    String[] lexemeList = run.getLexemes(line);
+                    //Separates the input line into lexemes and stores the lexemes in a global String array.
+                    lexAnalyze.getLexemes(line);
 
-                    System.out.println(Arrays.toString(lexemeList));
+                    //Tokenizes lexemes and stores the tokens in a global String array.
+                    lexAnalyze.getTokens();
 
-                    System.out.print("\n");
-                    myOutput.write("\n");
+                    //Outputs lexemes and tokens
+                    lexAnalyze.setMyOutput(line);
                 }
             }
             // If there are no more lines, it must be the end of file
             System.out.printf("Next token is: %-18s Next lexeme is %s\n", "END_OF_FILE", "EOF");
-            myOutput.write(String.format("Next token is: %-18s Next lexeme is %s\n", "END_OF_FILE", "EOF"));
+            lexAnalyze.myOutput.write(String.format("Next token is: %-18s Next lexeme is %s\n", "END_OF_FILE", "EOF"));
             System.out.print("Lexical analysis of the program is complete!\n");
-            myOutput.write("Lexical analysis of the program is complete!");
+            lexAnalyze.myOutput.write("Lexical analysis of the program is complete!");
 
             scan.close();
         }
-
         // Exceptions / errors are printed to terminal and to output file
         catch (FileNotFoundException e) {
             System.out.println("Cannot find file OR Problem with output file creation.");
-            myOutput.write("Cannot find file OR Problem with output file creation." + "\n");
-            System.out.println(e.toString());
-            myOutput.write(e.toString());
+            lexAnalyze.myOutput.write("Cannot find file OR Problem with output file creation." + "\n");
+            System.out.println(e);
+            lexAnalyze.myOutput.write(e.toString());
         }
-
         catch (Exception e) {
             e.printStackTrace();
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));
             String eStackTrace = stringWriter.toString();
-            myOutput.write(eStackTrace);
+            lexAnalyze.myOutput.write(eStackTrace);
+        }
+        lexAnalyze.myOutput.close();
+    }
+    public void getLexemes(String uglyLine){
+        //Multiple String.replace method calls adds spaces to special operators
+        String prettyLine = uglyLine.replace("=", " = ")
+                .replace("(", " ( ")
+                .replace(")", " ) ")
+                .replace("+", " + ")
+                .replace("-", " - ")
+                .replace("/", " / ")
+                .replace("*", " * ")
+                .replace(";"," ; ");
+        //Splits the modified line by one or more spaces
+        this.lexemeList = prettyLine.split("\\s+");
+    }
+    public void getTokens(){
+
+        //iterates lexemeList
+        for (int i = 0; i < lexemeList.length; i++) {
+            switch (lexemeList[i]) {//Compares lexemes to strings and assigns the appropriate token
+                case "(":
+                    tokenList[i] = "LEFT_PAREN";
+                    break;
+                case ")":
+                    tokenList[i] = "RIGHT_PAREN";
+                    break;
+                case "=":
+                    tokenList[i] = "ASSIGN_OP";
+                    break;
+                case "+":
+                    tokenList[i] = "ADD_OP";
+                    break;
+                case "-":
+                    tokenList[i] = "SUB_OP";
+                    break;
+                case "/":
+                    tokenList[i] = "DIV_OP";
+                    break;
+                case "*":
+                    tokenList[i] = "MULT_OP";
+                    break;
+                case ";":
+                    tokenList[i] = "SEMICOLON";
+                    break;
+                case "if":
+                    tokenList[i] = "IF_KEYWORD";
+                    break;
+                case "print":
+                    tokenList[i] = "PRINT_KEYWORD";
+                    break;
+                case "then":
+                    tokenList[i] = "THEN_KEYWORD";
+                    break;
+                case "Read":
+                    tokenList[i] = "READ_KEYWORD";
+                    break;
+                case "PROGRAM":
+                    tokenList[i] = "PROGRAM_KEYWORD";
+                    break;
+                case "END":
+                    tokenList[i] = "END_KEYWORD";
+                    break;
+                default:
+                    if (lexemeList[i].matches("\\d+"))tokenList[i] = "INT_LIT";//Checks if lexeme is literal Integer by regex
+                    else tokenList[i] = "IDENT";
+            }
+        }
+    }
+    public void setMyOutput(String line) throws IOException {
+
+        //Prints and writes input line to terminal and output file
+        System.out.println(line);
+        myOutput.write(line + "\n");
+
+        //Prints and writes each lexeme and token to terminal and output file
+        for (int i = 0; i < this.lexemeList.length; i++){
+            System.out.printf("Next token is: %-18s Next lexeme is %s\n", this.tokenList[i], this.lexemeList[i]);
+            myOutput.write(String.format("Next token is: %-18s Next lexeme is %s\n", this.tokenList[i], this.lexemeList[i]));
         }
 
-        myOutput.close();
-    }
+        //prints and writes newline to terminal and output file for readability
+        System.out.print("\n");
+        myOutput.write("\n");
 
-    public String[] getLexemes(String line){//Make method pretty and send to Professor.
-
-        String prettyLine = line.replace("=", " = ").replace("(", " ( ").replace(")", " ) ").replace("+", " + ").replace("-", " - ").replace("/", " / ").replace("*", " * ");
-        String[] lexemes = prettyLine.split("\\s+");
-        return lexemes;
     }
 }

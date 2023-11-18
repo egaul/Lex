@@ -1,12 +1,31 @@
 Eliana Gaul, CSCI4200, Fall 2023, Lexical Analyzer
 ********************************************************************************
 PROGRAM
+Next token is: PROGRAM_KEYWORD    Next lexeme is PROGRAM
 
 sumTotal = (sum + 47         ) /;
+Next token is: IDENT              Next lexeme is sumTotal
+Next token is: ASSIGN_OP          Next lexeme is =
+Next token is: LEFT_PAREN         Next lexeme is (
+Next token is: IDENT              Next lexeme is sum
+Next token is: ADD_OP             Next lexeme is +
+Next token is: INT_LIT            Next lexeme is 47
+Next token is: RIGHT_PAREN        Next lexeme is )
+Next token is: DIV_OP             Next lexeme is /
+Next token is: SEMICOLON          Next lexeme is ;
 
 Area=PI *          Radius * Radius;
+Next token is: IDENT              Next lexeme is Area
+Next token is: ASSIGN_OP          Next lexeme is =
+Next token is: IDENT              Next lexeme is PI
+Next token is: MULT_OP            Next lexeme is *
+Next token is: IDENT              Next lexeme is Radius
+Next token is: MULT_OP            Next lexeme is *
+Next token is: IDENT              Next lexeme is Radius
+Next token is: SEMICOLON          Next lexeme is ;
 
 END
+Next token is: END_KEYWORD        Next lexeme is END
 
 Next token is: END_OF_FILE        Next lexeme is EOF
 Lexical analysis of the program is complete!
