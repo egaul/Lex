@@ -87,7 +87,7 @@ public class Lex {
         }
         lexAnalyze.myOutput.close();
     }
-    public void getLexemes(String uglyLine){
+    private void getLexemes(String uglyLine){
         //Multiple String.replace method calls adds spaces to special operators
         String prettyLine = uglyLine.replace("=", " = ")
                 .replace("(", " ( ")
@@ -100,8 +100,7 @@ public class Lex {
         //Splits the modified line by one or more spaces
         this.lexemeList = prettyLine.split("\\s+");
     }
-    public void getTokens(){
-
+    private void getTokens(){
         //iterates lexemeList
         for (int i = 0; i < lexemeList.length; i++) {
             switch (lexemeList[i]) {//Compares lexemes to strings and assigns the appropriate token
@@ -138,7 +137,7 @@ public class Lex {
                 case "then":
                     tokenList[i] = "THEN_KEYWORD";
                     break;
-                case "Read":
+                case "read":
                     tokenList[i] = "READ_KEYWORD";
                     break;
                 case "PROGRAM":
@@ -149,12 +148,11 @@ public class Lex {
                     break;
                 default:
                     if (lexemeList[i].matches("\\d+"))tokenList[i] = "INT_LIT";//Checks if lexeme is literal Integer by regex
-                    else tokenList[i] = "IDENT";
+                    else tokenList[i] = "IDENT";//sets token to IDENT if the lexeme is not a special character or Integer literal
             }
         }
     }
-    public void setMyOutput(String line) throws IOException {
-
+    private void setMyOutput(String line) throws IOException {
         //Prints and writes input line to terminal and output file
         System.out.println(line);
         myOutput.write(line + "\n");
@@ -168,6 +166,5 @@ public class Lex {
         //prints and writes newline to terminal and output file for readability
         System.out.print("\n");
         myOutput.write("\n");
-
     }
 }
