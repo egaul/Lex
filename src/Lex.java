@@ -16,7 +16,7 @@ class CustomException extends Exception {
 }
 
 public class Lex {
-    private final int MAX = 100;
+    private final int MAX = 1000;
     private FileWriter myOutput;
     private String[] lexemeList;
     private String[] tokenList = new String[this.MAX];
